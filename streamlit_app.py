@@ -4,12 +4,12 @@ import requests
 BASE_URL = 'http://localhost:8000'
 
 st.set_page_config(
-    page_title='Travel Planner Agentic Application',
+    page_title='🌍Travel Planner Agentic Application',
     layout='centered',
     initial_sidebar_state='expanded'
 )
 
-st.title('Travel Planner Agentic Application ')
+st.title('🌍 Travel Planner Agentic Application')
 
 # Initialize chat history
 if 'messages' not in st.session_state:
@@ -19,7 +19,7 @@ if 'messages' not in st.session_state:
 st.header('How can I help you in planning a trip? Let me know where do you want to visit.')
 
 # Chat Input Box at bottom
-with st.form():
+with st.form(key='travel_planner_form'):
     user_input = st.text_input( 'User Input', placeholder='eg. Plan a trip to goa for 5 days.' )
     submit_button = st.form_submit_button( 'Send' )
 
@@ -46,4 +46,4 @@ if submit_button and user_input.strip():
             st.error( 'Bot unable to respond: ', response.text )
 
     except Exception as e:
-        raise "The response failed due to {e}"
+        st.error(f"The response failed due to: {e}")
