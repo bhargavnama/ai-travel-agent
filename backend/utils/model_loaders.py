@@ -5,6 +5,7 @@ from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from utils.config_loader import load_config
 import os
+from dotenv import load_dotenv
 
 class ConfigLoader:
     def __init__(self):
@@ -31,10 +32,17 @@ class ModelLoader(BaseModel):
 
         print("LLM  loading...")
         print(f"Loading model from provider: {self.model_provider}")
+        load_dotenv()
 
         if self.model_provider == 'groq':
             print('Loading llm from groq')
-            groq_api_key = os.getenv('GROQ_API_KEY')
+            groq_api_key = os.getenv('GROQ_API_KEY') or self.config['llm']['groq'].get('api_key')
+
+            if not groq_api_key:
+                raise ValueError(
+                    "GROQ_API_KEY is not set. Add it to your .env file or config.yaml."
+                )
+
             model = self.config['llm']['groq']['model_name']
             llm = ChatGroq(
                 model=model,
@@ -43,7 +51,7 @@ class ModelLoader(BaseModel):
 
         elif self.model_provider == 'openrouter':
             print('Loading llm from openrouter')
-            openrouter_api_key = os.getenv('OPENAI_API_KEY')
+            openrouter_api_key = os.getenv('OPENAI_API_KEY') or self.config['llm']['openrouter'].get('api_key')
             model = self.config['llm']['openrouter']['model_name']
             base_url = self.config['llm']['openrouter']['base_url']
             llm = ChatOpenAI(

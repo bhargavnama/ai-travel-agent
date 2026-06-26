@@ -1,9 +1,19 @@
+import traceback
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from agent.agentic_workflow import GraphBuilder
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 class QueryRequest(BaseModel):
     query: str
@@ -14,12 +24,8 @@ def quer_travel_agent(query: QueryRequest):
         graph = GraphBuilder( model_provider = 'groq' )
         react_app = graph()
 
-        png_graph = react_app.get_graph().get_mermaid_png()
-        with open('my_graph.png', 'wb') as f:
-            f.write(png_graph)
-
         messages = {
-            'messages': [query.question]
+            'messages': [query.query]
         }
         output = react_app.invoke(messages)
 
@@ -32,4 +38,5 @@ def quer_travel_agent(query: QueryRequest):
             'answer': final_output
         }
     except Exception as e:
+        traceback.print_exc()
         return JSONResponse( status_code=500, content={ 'error': str(e) } )

@@ -33,7 +33,7 @@ class GraphBuilder():
     def agent_function(self, state: MessagesState):
         
         user_query = state['messages']
-        input_query = self.system_prompt + user_query
+        input_query = [self.system_prompt] + user_query
         response = self.llm_with_tools.invoke(input_query)
 
         return {
@@ -45,7 +45,7 @@ class GraphBuilder():
         
         # Add nodes
         graph_builder.add_node( 'agent', self.agent_function )
-        graph_builder.add_node( 'tools', self.tools )
+        graph_builder.add_node( 'tools', ToolNode(self.tools) )
 
         # Add Endges
         graph_builder.add_edge( START, 'agent' )
@@ -58,4 +58,4 @@ class GraphBuilder():
         return self.graph
 
     def __call__(self):
-        pass
+        return self.build_graph()

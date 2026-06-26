@@ -20,13 +20,13 @@ class WeatherInfoTool:
             weather_data = self.weather_service.get_current_weather(city)
             if weather_data:
                 temp = weather_data.get('main', {}).get('temp', 'N/A')
-                desc = weather_data.get('weather', [{}]).get('description', 'N/A')
+                desc = weather_data.get('weather', [{}])[0].get('description', 'N/A')
             return f"Current weather in city: {temp}ºC, {desc}"
         
         @tool
         def get_weather_forecast(city: str) -> str:
             """Get weather forecast for a city."""
-            forecast_data = self.weather_service.get_weather_forecast(city)
+            forecast_data = self.weather_service.get_forecast_weather(city)
             if forecast_data and 'list' in forecast_data:
                 forecast_summary = []
                 for i in range(len(forecast_data['list'])):
@@ -35,7 +35,7 @@ class WeatherInfoTool:
                     temp = item['main']['temp']
                     desc = item['weather'][0]['description']
                     forecast_summary.append(f"{date}: {temp}ºC, {desc}")
-                return f"Weather forecast for {city}:\n".join(forecast_summary)
+                return f"Weather forecast for {city}:\n" + "\n".join(forecast_summary)
             
             return f"Could not fetch forecast for {city}"
 
